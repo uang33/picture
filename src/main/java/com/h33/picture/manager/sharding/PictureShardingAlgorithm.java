@@ -1,5 +1,13 @@
 package com.h33.picture.manager.sharding;
 
+import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Properties;
+
 public class PictureShardingAlgorithm implements StandardShardingAlgorithm<Long> {
 
     @Override
