@@ -20,6 +20,7 @@ import com.h33.picture.constant.UserConstant;
 import com.h33.picture.exception.BusinessException;
 import com.h33.picture.exception.ErrorCode;
 import com.h33.picture.exception.ThrowUtils;
+import com.h33.picture.manager.auth.SpaceUserAuthManager;
 import com.h33.picture.manager.auth.StpKit;
 import com.h33.picture.manager.auth.annotation.SaSpaceCheckPermission;
 import com.h33.picture.manager.auth.model.SpaceUserPermissionConstant;
@@ -192,6 +193,9 @@ public class PictureController {
 //        return ResultUtils.sucess(pictureService.getPictureV0(picture, request));
 //    }
 
+    @Resource
+    private SpaceUserAuthManager spaceUserAuthManager;
+
     @GetMapping("/get/vo")
     public BaseResponse<PictureV0> getPictureVOById(long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
@@ -204,11 +208,18 @@ public class PictureController {
         if (spaceId != null) {
             boolean hasPermission = StpKit.SPACE.hasPermission(SpaceUserPermissionConstant.PICTURE_VIEW);
             ThrowUtils.throwIf(!hasPermission, ErrorCode.NOT_AUTH_ERROE);
+            space = spaceService.getById(spaceId);
+            ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR, "空间不存在");
         }
+        // 获取权限列表
+        User loginUser = userService.getLoginUser(request);
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(space, loginUser);
         PictureV0 pictureVO = pictureService.getPictureV0(picture, request);
+        pictureVO.setPermissionList(permissionList);
         // 获取封装类
         return ResultUtils.sucess(pictureVO);
     }
+
 
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<PictureV0>> listPictureVOByPage(@RequestBody PictureQueryRequest pictureQueryRequest, HttpServletRequest request) {
@@ -475,7 +486,7 @@ public class PictureController {
 //        // 构建缓存 key
 //        String queryCondition = JSONUtil.toJsonStr(pictureQueryRequest);
 //        String hashKey = DigestUtils.md5DigestAsHex(queryCondition.getBytes());
-//        String cacheKey = "yupicture:listPictureVOByPage:" + hashKey;
+//        String cacheKey = "picture:listPictureVOByPage:" + hashKey;
 //
 //    // 1. 查询本地缓存（Caffeine）
 //            String cachedValue = LOCAL_CACHE.getIfPresent(cacheKey);

@@ -108,6 +108,14 @@
             <version>3.2.2</version>  <!-- 确保 Spring Boot 版本正确 -->
         </dependency>
 
+        <!-- 分库分表 -->
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+            <version>5.2.0</version>
+        </dependency>
+
+
 
 
         <!-- 高性能无锁队列 -->
@@ -116,6 +124,8 @@
             <artifactId>disruptor</artifactId>
             <version>3.4.2</version>
         </dependency>
+
+
 
 
 
